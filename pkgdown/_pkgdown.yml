@@ -1,0 +1,120 @@
+url: https://timjmiller.github.io/wham/
+
+news:
+  one_page: true
+
+navbar:
+  left:
+    - text: "Vignettes"
+      icon: fas fa-book fa-lg
+      menu:
+      -  text: "Overview"
+         href: articles/index.html
+      -  text: "Ex 1: The basics"
+         href: articles/ex01_basics.html
+      -  text: "Ex 2: Recruitment linked to an environmental covariate (Cold Pool Index)"
+         href: articles/ex02_CPI_recruitment.html
+      -  text: "Ex 3: Projecting / forecasting random effects"
+         href: articles/ex03_projections.html
+      -  text: "Ex 4: Selectivity with time- and age-varying random effects"
+         href: articles/ex4_selectivity.html
+      -  text: "Ex 5: Time-varying natural mortality linked to the Gulf Stream Index"
+         href: articles/ex05_GSI_M.html
+      -  text: "Ex 6: Numbers-at-age / survival deviations as random effects"
+         href: articles/ex06_NAA.html
+      -  text: "Ex 7: Debugging WHAM models"
+         href: articles/ex07_debug.html
+      -  text: "Ex 8: Compare ASAP and WHAM model results"
+         href: articles/ex08_compare.html
+      -  text: "Ex 9: Retrospective predictions"
+         href: articles/ex09_retro_pred.html
+      -  text: "Ex 10: Simulations"
+         href: articles/ex10_simulation.html
+      -  text: "Ex 11: Catchability configurations"
+         href: articles/ex11_catchability.html
+
+    - text: "Functions"
+      icon: far fa-file-code fa-lg
+      href: reference/index.html
+    - text: "Source code"
+      icon: fab fa-github fa-lg
+      href: https://github.com/timjmiller/wham/
+    - text: "News"
+      icon: fas fa-bullhorn fa-lg
+      href: news/index.html
+  right:
+    - icon: fas fa-question-circle fa-lg
+      text: "Issues"
+      href: https://github.com/timjmiller/wham/issues/
+    - icon: fas fa-paper-plane fa-lg
+      text: "Contact"
+      href: https://www.fisheries.noaa.gov/contact/timothy-miller-phd
+
+articles:
+  - title: "WHAM tutorial"
+    desc: >
+      These vignettes provide an introduction to fitting state-space assessment
+      models using the **WHAM** package. They get progressively more complex, so
+      we advise working through them in order unless you are only interested in
+      a specific topic.<br/>
+      <br/>
+      To run ALL examples (takes ~1 hour):<br/>
+      `# setwd("choose/where/to/save/output") # otherwise in working directory`<br/>
+      `library(wham)`<br/>
+      `wham.dir <- find.package("wham")`<br/>
+      `source(file.path(wham.dir, "example_scripts", "run_all_examples.R"))`<br/>
+    contents:
+      - ex01_basics
+      - ex02_CPI_recruitment
+      - ex03_projections
+      - ex04_selectivity
+      - ex05_GSI_M
+      - ex06_NAA
+      - ex07_debug
+      - ex08_compare
+      - ex09_retro_pred
+      - ex10_simulation
+      - ex11_catchability
+
+reference:
+  - title: Exported functions that user can call directly
+    contents:
+      - '`check_convergence`'
+      - '`compare_wham_models`'
+      - '`do_reference_points`'
+      - '`do_retro_peels`'
+      - '`do_sdreport`'
+      - '`fit_wham`'
+      - '`jitter_wham`'
+      - '`make_osa_residuals`'
+      - '`mohns_rho`'
+      - '`plot_wham_output`'
+      - '`prepare_wham_input`'
+      - '`prepare_projection`'
+      - '`project_wham`'
+      - '`read_asap3_dat`'
+      - '`retro`'
+      - '`self_test`'
+      - '`set_age_comp`'
+      - '`set_catch`'
+      - '`set_ecov`'
+      - '`set_F`'
+      - '`set_indices`'
+      - '`set_L`'
+      - '`set_M`'
+      - '`set_move`'
+      - '`set_NAA`'
+      - '`set_osa_obs`'
+      - '`set_q`'
+      - '`set_selectivity`'      
+  - title: Unexported functions that user do not call
+    contents:
+      - '`check_estimability`'
+      - '`extract_fixed`'
+      - '`fit_tmb`'
+      - '`fit_peel`'
+      - '`read_asap3_fit`'
+      - '`read_wham_fit`'
+      - '`reduce_input`'
+      - '`wham_html`'
+      - '`%>%`'

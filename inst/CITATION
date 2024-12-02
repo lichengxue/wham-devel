@@ -1,0 +1,23 @@
+citHeader("To cite WHAM in publications:")
+
+citEntry(entry = "misc",
+  title        = "The {W}oods {H}ole {A}ssessment {M}odel ({WHAM})",
+  author       = personList(as.person("Timothy J. Miller"),
+                  as.person("Brian C. Stock")),
+  year         = "2020",
+  note         = "Version 1.0",
+  url          = "https://timjmiller.github.io/wham/",
+
+  textVersion  =
+  paste("Miller, T.J. and Stock, B.C. 2020.",
+        "The Woods Hole Assessment Model (WHAM). Version 1.0.",
+        "https://timjmiller.github.io/wham/.")
+)
+
+citFooter(paste("This paper describes WHAM with equations and simulation tests:",
+"",
+"> Stock, B. C., and Miller, T. J. 2021. The Woods Hole Assessment Model (WHAM):",
+"A general state-space assessment framework that incorporates time- and age-varying",
+"processes via random effects and links to environmental covariates.",
+"Fisheries Research, 240: 105967. doi: 10.1016/j.fishres.2021.105967",
+"",sep="\n"))
