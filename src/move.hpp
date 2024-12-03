@@ -485,7 +485,7 @@ Type get_move_devs(matrix<int> onto_move, int a, int n_ages, array<Type> onto_mo
   
   if (age_mu_devs.size() == 0) {
     int n_stocks = onto_move.rows();
-    int n_regions = onto_move.rows();
+    int n_regions = onto_move.cols();
     array<Type> age_mu_devs_tmp(n_stocks,n_regions,n_ages);
     age_mu_devs_tmp.setZero();
     age_mu_devs = age_mu_devs_tmp;
