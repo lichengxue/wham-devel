@@ -465,55 +465,55 @@ vector<Type> additive_ln_transform(vector<Type> x, int region, vector<int> can_m
 
 
 template<class Type>
-Type get_move_devs(matrix<int> onto_move, int a, int n_ages, array<Type> onto_move_pars, int s, int r, array<Type> age_mu_devs) {
-  
-  /* 
+Type get_move_devs(array<Type> onto_move, int a, int n_ages, array<Type> onto_move_pars, int s, int r, int rr, array<Type> age_mu_devs) {
+  /*
    Specify age-specific movement rate
-   onto_move: n_stocks x n_regions, type of age-specific movement
-   1: increasing logistic; 2. decreasing logistic; 3. double-logistic; 4. double-normal; 5. user-specify
+   onto_move: n_stocks x n_regions x (n_regions - 1), type of age-specific movement
+   1: increasing logistic; 2: decreasing logistic; 3: double-logistic; 4: double-normal; 5: user-specify
    a: age
    n_ages: max age
-   onto_move_pars: n_stocks x n_regions x n_pars: pars associated with age-specific movement curve
+   onto_move_pars: n_stocks x n_regions x (n_regions - 1) x n_pars: parameters for age-specific movement
    s: stock
-   r: region
-   age_mu_devs: only used when onto_move = 5 (user specify)
+   r: source region
+   rr: destination region (excludes diagonal, i.e., r != rr)
+   age_mu_devs: n_stocks x n_regions x (n_regions - 1) x n_ages
    */
   
   Type mu_devs = 0.0;
   
-  int onto_move_type = onto_move(s,r);
+  Type onto_move_type = static_cast<Type>(onto_move(s, r, rr));
   
-  if (age_mu_devs.size() == 0) {
-    int n_stocks = onto_move.rows();
-    int n_regions = onto_move.cols();
-    array<Type> age_mu_devs_tmp(n_stocks,n_regions,n_ages);
+  if (onto_move_type == 5 && age_mu_devs.size() == 0) {
+    int n_stocks = onto_move.dim(0);
+    int n_regions = onto_move.dim(1);
+    array<Type> age_mu_devs_tmp(n_stocks, n_regions, n_regions-1, n_ages);
     age_mu_devs_tmp.setZero();
     age_mu_devs = age_mu_devs_tmp;
   }
   
   if (onto_move_type == 1) {
     Type a_max = n_ages - 1;
-    Type a50 = onto_move_pars(s, r, 0);
-    Type k = onto_move_pars(s, r, 1);
+    Type a50 = onto_move_pars(s, r, rr, 0);  // Include rr
+    Type k = onto_move_pars(s, r, rr, 1);    // Include rr
     Type logit_val = 1.0 / (1.0 + exp(-(a - a50) / k));
     logit_val /= (1.0 / (1.0 + exp(-(a_max - a50) / k)));
     mu_devs = log(logit_val);
   }
   
   if (onto_move_type == 2) {
-    Type a50 = onto_move_pars(s, r, 0);
-    Type k = onto_move_pars(s, r, 1);
+    Type a50 = onto_move_pars(s, r, rr, 0);
+    Type k = onto_move_pars(s, r, rr, 1);
     Type logit_val = 1.0 / (1.0 + exp(-(a - a50) / k));
     logit_val = 1.0 - logit_val;
     logit_val /= (1.0 - (1.0 / (1.0 + exp(-(0 - a50) / k))));
     mu_devs = log(logit_val);
-  } 
+  }
   
   if (onto_move_type == 3) {
-    Type a50_1 = onto_move_pars(s, r, 0);
-    Type k_1 = onto_move_pars(s, r, 1);
-    Type a50_2 = onto_move_pars(s, r, 2);
-    Type k_2 = onto_move_pars(s, r, 3);
+    Type a50_1 = onto_move_pars(s, r, rr, 0);
+    Type k_1 = onto_move_pars(s, r, rr, 1);
+    Type a50_2 = onto_move_pars(s, r, rr, 2);
+    Type k_2 = onto_move_pars(s, r, rr, 3);
     
     Type logit_val = 1.0 / (1.0 + exp(-(a - a50_1) / k_1));
     logit_val *= (1.0 / (1.0 + exp((a - a50_2) / k_2)));
@@ -525,33 +525,34 @@ Type get_move_devs(matrix<int> onto_move, int a, int n_ages, array<Type> onto_mo
       logit_val_tmp *= (1.0 / (1.0 + exp((test_a - a50_2) / k_2)));
       if (logit_val_tmp > peak_logit_val) {
         peak_logit_val = logit_val_tmp;
-      } 
-    } 
+      }
+    }
     logit_val /= peak_logit_val;
     mu_devs = log(logit_val);
-  } 
+  }
   
   if (onto_move_type == 4) {
-    Type a50_1 = onto_move_pars(s, r, 0); 
-    Type k_1 = onto_move_pars(s, r, 1);  
-    Type a50_2 = onto_move_pars(s, r, 2); 
-    Type k_2 = onto_move_pars(s, r, 3);   
+    Type a50_1 = onto_move_pars(s, r, rr, 0); 
+    Type k_1 = onto_move_pars(s, r, rr, 1);  
+    Type a50_2 = onto_move_pars(s, r, rr, 2); 
+    Type k_2 = onto_move_pars(s, r, rr, 3);   
     
     Type left_val = exp(-pow((a - a50_1) / k_1, 2)); 
     Type right_val = exp(-pow((a - a50_2) / k_2, 2)); 
-
+    
     Type double_normal_val = left_val + right_val;
-
+    
     Type peak_left = exp(-pow((a50_1 - a50_1) / k_1, 2));   
     Type peak_right = exp(-pow((a50_2 - a50_2) / k_2, 2));
     Type peak_val = peak_left + peak_right;
-
+    
     double_normal_val /= peak_val; 
     mu_devs = log(double_normal_val);
   }
   
   if (onto_move_type == 5) {
-    mu_devs = age_mu_devs(s,r,a);
+    // Access age_mu_devs for stock, source region, destination region, and age
+    mu_devs = age_mu_devs(s, r, rr, a);
   }
   
   return mu_devs;
@@ -594,9 +595,9 @@ array<Type> increment_trans_mu(array<Type> trans_mu_base, Type trend_mu_rate, in
 
 //provides transformed mu (good for sdreporting)
 template<class Type>
-array<Type> get_trans_mu_base(array<Type> trans_mu, array<Type>mu_re, array<Type> mu_prior_re, array<int> use_mu_prior, matrix<int> mu_model,
+array<Type> get_trans_mu_base(array<Type> trans_mu, array<Type> mu_re, array<Type> mu_prior_re, array<int> use_mu_prior, matrix<int> mu_model,
                               array<Type> Ecov_lm, array<int> Ecov_how, 
-                              matrix<int> onto_move, array<Type> onto_move_pars, array<Type> age_mu_devs,
+                              array<Type> onto_move, array<Type> onto_move_pars, array<Type> age_mu_devs,
                               int apply_mu_trend, Type trend_mu_rate){
   /* 
    Construct base mu-at-age (excluding any density-dependence)
@@ -622,7 +623,7 @@ array<Type> get_trans_mu_base(array<Type> trans_mu, array<Type>mu_re, array<Type
     for(int r = 0; r< n_regions; r++) for(int rr = 0; rr < n_regions-1; rr++) {
       for(int s = 0; s< n_stocks; s++) for(int a = 0; a < n_ages; a++) for(int t = 0; t < n_seasons; t++) for(int y = 0; y < ny; y++){
         
-        Type move_devs = get_move_devs(onto_move, a, n_ages, onto_move_pars, s, r, age_mu_devs);
+        Type move_devs = get_move_devs(onto_move, a, n_ages, onto_move_pars, s, r, rr, age_mu_devs);
         
         if((mu_model(r,rr) > 0) & (mu_model(r,rr) <= 4)){ //constant
           if(mu_model(r,rr) == 2) trans_mu_base(s,a,t,y,r,rr) += mu_re(0,a,0,0,r,rr); // age random effects
@@ -674,7 +675,7 @@ matrix<Type> get_mu_matrix(int stock, int age, int season, int year, vector<int>
       mig_type: n_stocks. 0 = migration after survival, 1 = movement and mortality simultaneous
       can_move: n_stocks x n_seasons x n_regions x n_regions: 0/1 determining whether movement can occur from one region to another
       must_move: n_stocks x n_seasons x n_regions: 0/1 determining if it must leave the region
-      trans_mu_base: n_stocks x n_ages x n_seasons x n_years x n_regions x n_regions-1. array retruned by get_trans_mu_base
+      trans_mu_base: n_stocks x n_ages x n_seasons x n_years x n_regions x n_regions-1. array returned by get_trans_mu_base
   */
 
   int n_regions = trans_mu_base.dim(4);

@@ -477,6 +477,7 @@ set_move = function(input, move)
 
   inv_trans_rho <- function(rho, s = 1) (log(rho+1) - log(1-rho))/s
   k <- 1
+  
   if(!is.null(move$mean_vals)){
     for(s in 1:data$n_stocks) {
       if(data$mig_type[s]) { #simultaneous

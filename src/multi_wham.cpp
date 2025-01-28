@@ -121,9 +121,9 @@ Type objective_function<Type>::operator() ()
   DATA_IMATRIX(mu_model); //n_regions x n_regions - 1 
   
   // Ontogenetic Movement 
-  DATA_IMATRIX(onto_move); //1: Ontogenetic/age-specific movement rate is assumed
-  DATA_ARRAY(onto_move_pars); // parameters control the curve of age-specific movement
-  DATA_ARRAY(age_mu_devs); // only used when user specified age-specific movement 
+  DATA_ARRAY(onto_move); // n_stocks x n_regions x (n_regions - 1): 0/1 determining whether age-specific movement rate is used
+  DATA_ARRAY(onto_move_pars); // n_stocks x n_regions x (n_regions - 1) x n_pars (= 4): parameters for age-specific movement
+  DATA_ARRAY(age_mu_devs); // n_stocks x n_regions x (n_regions - 1) x n_ages: only used when user specified age-specific movement 
   
   DATA_INTEGER(apply_re_trend); // trend on random effects
   DATA_SCALAR(trend_re_rate); // rate of trend on random effects 
@@ -678,7 +678,8 @@ Type objective_function<Type>::operator() ()
     if(do_post_samp_mu) ADREPORT(mu_re);
   }
     
-  array<Type> trans_mu_base = get_trans_mu_base(trans_mu, mu_re, mu_prior_re, use_mu_prior, mu_model, Ecov_lm_mu, Ecov_how_mu, 
+  array<Type> trans_mu_base = get_trans_mu_base(trans_mu, mu_re, mu_prior_re, use_mu_prior, 
+                                                mu_model, Ecov_lm_mu, Ecov_how_mu, 
                                                 onto_move, onto_move_pars, age_mu_devs,
                                                 apply_mu_trend, trend_mu_rate);
   REPORT(trans_mu_base);
