@@ -645,7 +645,7 @@ array<Type> get_trans_mu_base(array<Type> trans_mu, array<Type> mu_re, array<Typ
                 }
               } else {
                 
-                if (mig_type(s) == 0) {
+                if (mig_type(s) == 0) { // sequential movement
                   // Step 1: Compute trans_mu_base before transforming
                   Type sum_exp = 0.0;
                   for (int rr = 0; rr < n_regions - 1; rr++) {
@@ -675,10 +675,10 @@ array<Type> get_trans_mu_base(array<Type> trans_mu, array<Type> mu_re, array<Typ
                   
                 } 
                 
-                if (mig_type(s) == 1) {
+                if (mig_type(s) == 1) { // simultaneous movement
                   for (int rr = 0; rr < n_regions - 1; rr++) {
                     Type move_devs = get_move_devs(onto_move, a, n_ages, onto_move_pars, s, r, rr, age_mu_devs);
-                    trans_mu_base(s,a,t,y,r,rr) += log(move_devs);
+                    trans_mu_base(s,a,t,y,r,rr) = log(exp(trans_mu(s,t,r,rr))+move_devs); // Need to double check!
                   }
                 }
                 
