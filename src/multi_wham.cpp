@@ -681,7 +681,7 @@ Type objective_function<Type>::operator() ()
   array<Type> trans_mu_base = get_trans_mu_base(trans_mu, mu_re, mu_prior_re, use_mu_prior, 
                                                 mu_model, Ecov_lm_mu, Ecov_how_mu, 
                                                 onto_move, onto_move_pars, age_mu_devs,
-                                                apply_mu_trend, trend_mu_rate);
+                                                mig_type, apply_mu_trend, trend_mu_rate);
   REPORT(trans_mu_base);
   //n_stocks x n_ages x n_seasons x n_years_pop x n_regions x n_regions - 1
   //rows sum to 1 for mig_type = 0 (prob move), rows sum to 0 for mig_type 1 (instantaneous)
